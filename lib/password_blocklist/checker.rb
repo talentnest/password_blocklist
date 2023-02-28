@@ -9,8 +9,12 @@ module PasswordBlocklist
       sm: 'Top12Thousand-probable-v2.txt',
       md: 'Top95Thousand-probable.txt',
       lg: 'Top304Thousand-probable-v2.txt',
-      xl: 'Top1pt6Million-probable-v2.txt'
+      xl: 'Top1pt6Million-probable-v2.txt',
+      custom: 'password_blocklist.txt'
     }.freeze
+
+    LISTS_LOCATION = '../../../data'
+    CUSTOM_LIST_LOCATION = "#{Dir.pwd}/data"
 
     DEFAULT_SIZE = :md
 
@@ -22,7 +26,7 @@ module PasswordBlocklist
       load_list_file(DEFAULT_SIZE) if @current_list_size.nil?
       load_list_file(list_size) if list_size && @current_list_size != list_size.to_sym
 
-      !!@data.match(Regexp.escape(password.downcase))
+      !!@data.match(Regexp.escape(password))
     end
 
     def inspect
@@ -39,10 +43,10 @@ module PasswordBlocklist
 
     def file_path(list_size)
       file_name = FILES[list_size]
-
       raise UnknownListSizeError unless file_name
 
-      File.expand_path(File.join('../../../data', file_name), __FILE__)
+      file_location = (list_size == :custom) ? CUSTOM_LIST_LOCATION : LISTS_LOCATION
+      File.expand_path(File.join(file_location, file_name), __FILE__)
     end
   end
 end
